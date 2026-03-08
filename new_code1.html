@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>RAG Simulator - Learning Tool</title>
+
+<style>
+
+body{
+font-family: Arial, sans-serif;
+background:#f4f7fb;
+margin:0;
+padding:30px;
+}
+
+h1{
+text-align:center;
+color:#333;
+}
+
+.container{
+max-width:1000px;
+margin:auto;
+}
+
+.card{
+background:white;
+border-radius:10px;
+padding:20px;
+margin-bottom:20px;
+box-shadow:0 4px 10px rgba(0,0,0,0.1);
+}
+
+textarea,input{
+width:100%;
+padding:10px;
+margin-top:10px;
+border-radius:5px;
+border:1px solid #ccc;
+}
+
+button{
+background:#4a6cf7;
+color:white;
+border:none;
+padding:10px 20px;
+border-radius:6px;
+margin-top:10px;
+cursor:pointer;
+}
+
+button:hover{
+background:#324ed1;
+}
+
+.step{
+margin-top:15px;
+padding:10px;
+background:#f0f3ff;
+border-radius:5px;
+}
+
+.chunk{
+background:#e9f1ff;
+padding:6px;
+margin:5px 0;
+border-radius:4px;
+font-size:14px;
+}
+
+.vector{
+background:#f7eaff;
+padding:6px;
+margin:5px 0;
+border-radius:4px;
+font-size:13px;
+}
+
+.result{
+background:#d8ffe4;
+padding:10px;
+border-radius:5px;
+margin-top:10px;
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>RAG Learning Simulator</h1>
+
+<div class="container">
+
+<div class="card">
+
+<h3>Step 1: Input Documents</h3>
+
+<textarea id="documents" rows="6">
+Artificial Intelligence helps machines learn from data.
+Machine Learning is a subset of AI.
+RAG combines retrieval with generation.
+Vector databases store embeddings.
+AI systems use similarity search to find relevant information.
+</textarea>
+
+<button onclick="chunkText()">Create Chunks</button>
+
+</div>
+
+
+<div class="card">
+
+<h3>Step 2: Chunking</h3>
+
+<div id="chunks"></div>
+
+<button onclick="createVectors()">Generate Embeddings</button>
+
+</div>
+
+
+<div class="card">
+
+<h3>Step 3: Embeddings (Simulated Vectors)</h3>
+
+<div id="vectors"></div>
+
+</div>
+
+
+<div class="card">
+
+<h3>Step 4: Ask a Question</h3>
+
+<input id="query" placeholder="Example: What is RAG?" />
+
+<button onclick="search()">Retrieve Answer</button>
+
+<div id="results"></div>
+
+</div>
+
+</div>
+
+
+<script>
+
+let chunks = []
+let vectors = []
+
+function chunkText(){
+
+let text = document.getElementById("documents").value
+
+chunks = text.split(".").filter(c => c.trim() !== "")
+
+let output=""
+
+chunks.forEach((c,i)=>{
+
+output += `<div class="chunk">Chunk ${i+1}: ${c.trim()}</div>`
+
+})
+
+document.getElementById("chunks").innerHTML = output
+
+}
+
+
+function createVectors(){
+
+vectors=[]
+
+let output=""
+
+chunks.forEach((c,i)=>{
+
+let vector=[Math.random().toFixed(2),Math.random().toFixed(2),Math.random().toFixed(2)]
+
+vectors.push({text:c,vector:vector})
+
+output += `<div class="vector">Chunk ${i+1}: [${vector}]</div>`
+
+})
+
+document.getElementById("vectors").innerHTML=output
+
+}
+
+
+function similarity(v1,v2){
+
+let score=0
+
+for(let i=0;i<v1.length;i++){
+
+score += v1[i]*v2[i]
+
+}
+
+return score
+
+}
+
+
+function search(){
+
+let q=document.getElementById("query").value
+
+if(q==="") return
+
+let queryVector=[Math.random(),Math.random(),Math.random()]
+
+let bestChunk=""
+let bestScore=0
+
+vectors.forEach(v=>{
+
+let score=similarity(queryVector,v.vector)
+
+if(score>bestScore){
+
+bestScore=score
+
+bestChunk=v.text
+
+}
+
+})
+
+document.getElementById("results").innerHTML=
+
+`<div class="result">
+<b>Query:</b> ${q}<br><br>
+<b>Retrieved Chunk:</b> ${bestChunk}<br><br>
+<b>Explanation:</b> The simulator compares vector similarity and retrieves the closest chunk to answer the query.
+</div>`
+
+}
+
+</script>
+
+</body>
+</html>
